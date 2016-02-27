@@ -358,11 +358,11 @@ public class Solver
       HashSet<Block> goalConfig = new HashSet<Block>();
       String[] bVars;
 
-      //wordReader = reader(initFile);
+      wordReader = reader(initFile);
       //wordReader = reader ("C:/Users/Kevin/workspace/47BBlocks/resources/c33.txt");
       //wordReader = reader ("C:/Users/Kevin/workspace/47BBlocks/resources/test_init.txt");
       //wordReader = reader ("C:/Users/Kevin/workspace/47BBlocks/tests/hard/big.tray.3");
-      wordReader = reader("C:/Users/Kevin/workspace/47BBlocks/tests/easy/init.from.handout");
+      //wordReader = reader("C:/Users/Kevin/workspace/47BBlocks/tests/easy/init.from.handout");
       bVars = wordReader.readLine().split(" ");
       int height = Integer.parseInt(bVars[0]);
       int width = Integer.parseInt(bVars[1]);
@@ -388,11 +388,11 @@ public class Solver
           }
       } while (true);
 
-      //wordReader = reader(goalFile);
+      wordReader = reader(goalFile);
       //wordReader = reader ("C:/Users/Kevin/workspace/47BBlocks/resources/c33goal.txt");
       //wordReader = reader ("C:/Users/Kevin/workspace/47BBlocks/resources/test_goal.txt");
       //wordReader = reader ("C:/Users/Kevin/workspace/47BBlocks/tests/hard/big.tray.3.goal");
-      wordReader = reader("C:/Users/Kevin/workspace/47BBlocks/tests/easy/goal.2.from.handout");
+      //wordReader = reader("C:/Users/Kevin/workspace/47BBlocks/tests/easy/goal.2.from.handout");
       do {
           try {
               bVars = wordReader.readLine ().split(" ");
@@ -419,11 +419,10 @@ public class Solver
       puzzle.init.display();
       System.out.println("Goal board: " + puzzle.goal);
       */
-      
+
       //solves and prints the puzzle
       Board result = puzzle.solve();
       puzzle.printPath(result);
-      
       
    }
    

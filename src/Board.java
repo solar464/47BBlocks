@@ -101,9 +101,9 @@ public class Board
       if(toFill != null){
          //System.out.println("Move " + b + " in direction " + direction);
          toReturn = this.deepClone();
-         System.out.println(direction + " " + toFill + " " + toReturn.spaces);
+         //System.out.println(direction + " " + toFill + " " + toReturn.spaces);
          moved = b.move(direction, toFill, toReturn.spaces);
-         System.out.println(b + " " + moved);
+         //System.out.println(b + " " + moved);
          //remove original block and add the updated or moved version
          toReturn.allBlocks.remove(b);
          if(!toReturn.allBlocks.add(moved)){

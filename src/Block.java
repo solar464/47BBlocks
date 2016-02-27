@@ -6,6 +6,8 @@ public class Block
    private int hght, wdth;
    private Pair pos;
    private static HashMap<Integer, Block> allPieces;
+   private static int hashFactor;
+   public static int getHashFactor(){ return hashFactor; }
    
    //debug controllers
    private static boolean BLOCK1 = false, BLOCK2 = false, BLOCK3 = false;
@@ -53,19 +55,30 @@ public class Block
    //initialize storage of (Block)s
    public static void initializePieces(){
       if(allPieces == null)
-         allPieces = new HashMap<Integer, Block>();
+         allPieces = new HashMap<Integer, Block>(1000);
+      int dimension = Math.max(Pair.getH(), Pair.getW());
+      for(int i = 1;; i++){
+         dimension = dimension / 10;
+         if(dimension < 10){
+            hashFactor = (int) Math.pow(10,i);
+            break;
+         }
+      }
+      
    }
+   
+   public static HashMap<Integer,Block> getPieces(){ return allPieces; }
    
    //retrieve (Block) with the desired information, create it if it doesn't exist
    public static Block getInstance(int height, int width, int xPos, int yPos){
       instanceCount++;
-      int hash = height*10^3 + width*10^2 + yPos*10 + xPos;
+      int hash = (int) (height*(Math.pow(hashFactor,3)) + width*(Math.pow(hashFactor,2)) + yPos*hashFactor + xPos);
       Block toReturn = allPieces.get(hash);
       if(toReturn == null){
          toReturn = new Block(height, width, xPos, yPos);
          allPieces.put(hash, toReturn);
       }
-      System.out.println(height+ ""+width+yPos+xPos + ":" + toReturn);
+      //System.out.println(height+ ""+width+yPos+xPos + ":" + toReturn);
       return toReturn;
    }
    public static Block getInstance(int height, int width, Pair pos){
@@ -145,11 +158,10 @@ public class Block
             shouldBeEmptyTime += System.nanoTime() - startTime;
          return null;
       }
-      
-      //begin generating list to return, null if needed space not there
+      //generate list of needed empty spaces
+      Pair maybeEmpty;
       LinkedList<Pair> toCheck = new LinkedList<Pair>();
       toCheck.add(beginCheck);
-      Pair maybeEmpty;
       for(int i = 1; i < numToCheck; i++){
          maybeEmpty = beginCheck.add(dirToCheck.mult(i));
          if(!empty.contains(maybeEmpty)){
@@ -159,6 +171,7 @@ public class Block
          }
          toCheck.add(maybeEmpty); 
       }
+      
       
       if(BLOCK3)
          shouldBeEmptyTime += System.nanoTime() - startTime;
