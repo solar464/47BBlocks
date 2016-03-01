@@ -1,13 +1,15 @@
 import java.util.*;
 
+
 //Representation of a board with (Block)s and the empty spaces
-public class Board
+public class Board implements Comparable<Board>
 {
    //stores the blocks
    private HashSet<Block> allBlocks;
    //stores the empty spaces
    private HashSet<Pair> spaces;
-   
+   //for heuristic
+   private int cost;
    //stores information about the path to (this)
    //refers to the previous (Board) configuration and the (Block) in the parent
    //  that was moved and the (Pair) direction it was moved in
@@ -84,6 +86,7 @@ public class Board
    public Board getParent(){ return parent; }
    public Block getMovedBlock(){ return movedBlock; }
    public Pair getMovedDirection(){ return movedDirection; }
+   public int getCost(){ return cost; }
    
    //generates a new board with the given (Block) moved in the given (direction)
    //  for use in Solver.solve() in move generation
@@ -315,7 +318,49 @@ public class Board
          System.out.println();
       }
    }
+   //for generating (cost) to use in PriorityQueue in Solver.solve()
+   public int generateCost(Board goal){
+      if(cost != 0){
+         System.out.println("The cost has been set before; that shouldn't happen.");
+         return cost;
+      }
+      LinkedList<Block> toCheck = new LinkedList<Block>();
+      toCheck.addAll(allBlocks);
+      int toReturn = 0;
+      
+      for(Block b: goal.getBlocks()){
+         toReturn += findMinCost(toCheck, b);
+      }
+      return toReturn;
+   }
    
+   
+   private int findMinCost(LinkedList<Block> toCheck, Block goalB){
+      int toReturn = Integer.MAX_VALUE;
+      int maybeMin;
+      Block closestBlock = null;
+      for(Block b: toCheck){
+         if(b.getHeight() != goalB.getHeight() || b.getWidth() != goalB.getWidth())
+            continue;
+         
+         maybeMin = Pair.manhattanDis(goalB.getPos(), b.getPos());
+         
+         if(maybeMin < toReturn){
+            toReturn = maybeMin;
+            closestBlock = b;
+         }
+      }
+      if(toReturn == Integer.MAX_VALUE)
+         System.out.println("A goal block doesn't seem to exist...");
+      toCheck.remove(closestBlock);
+      return toReturn;
+   }
+   
+   @Override
+   public int compareTo(Board other)
+   {
+      return this.cost - other.cost;
+   }
    public static void main(String[] args){
       Pair.generateTable(3, 3);
       Block.initializePieces();

@@ -101,12 +101,12 @@ public class Solver
       if(init.checkSolved(goal))
          return init;
       long startTime = System.nanoTime();
-      LinkedList<Board> toProcess = new LinkedList<Board>();
+      PriorityQueue<Board> toProcess = new PriorityQueue<Board>();
       past = new HashSet<Board>();
+      init.generateCost(goal);
       toProcess.add(init);
       past.add(init);
       Board current, nBoard;
-      
       
       while(!toProcess.isEmpty()){
  
@@ -142,23 +142,24 @@ public class Solver
                if(!past.contains(nBoard)){
                   if(newConfig)
                      System.out.println("New (Board) configuration encountered: " + nBoard);
-                  past.add(nBoard);
-                  toProcess.add(nBoard);
                   
-                  //link to the parent
-                  nBoard.setPath(current, b, drctn);
-                  //System.out.println(clone);
+                  //check if (nBoard) contains (goal)
+                  if(nBoard.checkSolved(goal)){
+                     if(SolveTime)
+                        System.out.println("Time elapsed for solving: " + (System.nanoTime() - startTime)/1000000);
+                     return nBoard;
+                  }
+                  
+                  past.add(nBoard);
+                  nBoard.generateCost(goal);
+                  toProcess.add(nBoard);
                }
-               
-               //check if (nBoard) contains (goal)
-               if(nBoard.checkSolved(goal)){
-                  if(SolveTime)
-                     System.out.println("Time elapsed for solving: " + (System.nanoTime() - startTime)/1000000);
-                  return nBoard;
-               }
+                      
             }
          }
       }
+      if(SolveTime)
+         System.out.println("Time elapsed to exhaust all reachable configurations: " + (System.nanoTime() - startTime)/1000000);
       return null;
    }
    
@@ -426,6 +427,7 @@ public class Solver
       
    }
    
+   /*
    //helper class to associate cost values to (Board)s for use in (toProcess)
    private class BWrapper implements Comparable<BWrapper>{
       private Board self;
@@ -479,4 +481,5 @@ public class Solver
       }
       
    }
+   */
 }

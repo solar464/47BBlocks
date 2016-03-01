@@ -117,7 +117,7 @@ public class Block
    
    //for use in storing in (Board)s
    public int hashCode(){
-      return (hght + "" + wdth + pos.toString()).hashCode();
+      return (int) (hght*(Math.pow(hashFactor,3)) + wdth*(Math.pow(hashFactor,2)) + getYPos()*hashFactor + getXPos());
    }
    
    //calculates the empty spaces required for (this) to move in the given (direction)
