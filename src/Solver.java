@@ -39,9 +39,11 @@ public class Solver
    
    //debug controllers
    private boolean time = false, numbers = false, newConfig = false, isOK = false, 
-         printPath1 = false, printPath2 = false, SolveTime = false;
-   private static boolean printBase = true;
+         printPath1 = false, printPath2 = false, SolveTime = false; 
+   private static boolean printBase = true, heuristic = false;
    public static void setPrintBase(boolean b){ printBase = b; }
+   public static void setHeuristic(boolean b){ heuristic = b; }
+   public static boolean getHeuristic(){ return heuristic; }
    
    //borrowed and modified from HashTest.java
    //finds a a file from the given file name and path and returns a 
@@ -83,7 +85,8 @@ public class Solver
       
       init = new Board(initConfig, empty);
       goal = new Board(goalConfig);
-      
+      if(h * w > 100 && init.getBlocks().size() < 200)
+         heuristic = true;
       //set the debug mode
       setDebugMode(debugString);
    }
@@ -140,8 +143,6 @@ public class Solver
                }
                //checks to see if the (Board) was seen before
                if(!past.contains(nBoard)){
-                  if(newConfig)
-                     System.out.println("New (Board) configuration encountered: " + nBoard);
                   
                   //check if (nBoard) contains (goal)
                   if(nBoard.checkSolved(goal)){
@@ -151,7 +152,13 @@ public class Solver
                   }
                   
                   past.add(nBoard);
-                  nBoard.generateCost(goal);
+                  if(heuristic)
+                     nBoard.generateCost(goal);
+                  
+                  if(newConfig){
+                     System.out.println("New (Board) configuration encountered: " + nBoard);
+                     System.out.println("Cost: " + nBoard.getCost());
+                  }
                   toProcess.add(nBoard);
                }
                       
@@ -227,6 +234,7 @@ public class Solver
          System.out.println("Estimated number of unique (Block)s possible: "
                + (maxH * maxW) * (getH() * getW()));
       }
+      Block.printInstanceCount();
       Block.printTimes();
       
       //debugging information regarding (Board)s
@@ -257,13 +265,15 @@ public class Solver
     
        + "-oSolveTime   prints the time taken to solve the puzzle only\n"
        + "-oisOK        checks if each board is legal\n"
-       + "-onewConfig   prints if a encounters a new configuration\n"
+       + "-onewConfig   prints if a encounters a new configuration and its cost\n"
        + "-oprintPath1  prints a more detailed list of moves\n"
        + "-oprintPath2  -oprintPath1 with display for each (Board) in the path\n"
    
        + "-otime        prints all run times for various methods or stages of all classes\n"
        + "-onumbers     -oPair2, -oBlock1, -oBoard1, number of moves made to solve\n"
        + "\n*Preceding any command with \"--\" instead of \"-o\" will erase the base output\n"
+       + "\n*Preceding any command with \"-h\" instead of \"-o\" will reverse the usage of the heuristic\n"
+       + "\n*Preceding any command with \"-H\" instead of \"-o\" will have the combined effect of both above\n"
        + "*All run times are printed in milliseconds";
        System.out.println(options);
    }
@@ -341,10 +351,17 @@ public class Solver
          System.exit(1);
       }
       
-      String identifier = args[0].substring(0,2);
-      if(identifier.equals("-o") || identifier.equals("--")){
-         if(identifier.equals("--"))
+      char debugg = args[0].charAt(0);
+      if(debugg == '-'){
+         char identifier = args[0].charAt(1);
+         if(identifier == '-')
             setPrintBase(false);
+         else if(identifier == 'h')
+            setHeuristic(!getHeuristic());
+         else if(identifier == 'H'){
+            setPrintBase(false);
+            setHeuristic(!getHeuristic());
+         }
          DBMode = args[0].substring(2);
          initFile = args[1];
          goalFile = args[2];

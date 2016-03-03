@@ -49,7 +49,8 @@ public class Block
    public static void setInstanceCount(int i){ instanceCount = i; }
    public static int getInstanceCount(){ return instanceCount; }
    public static void printInstanceCount(){
-      System.out.println("Number of (Block) references created: " + instanceCount);
+      if(BLOCK1)
+         System.out.println("Number of (Block) references created: " + instanceCount);
    }
    
    //initialize storage of (Block)s
@@ -67,7 +68,7 @@ public class Block
       
    }
    
-   public static HashMap<Integer,Block> getPieces(){ return allPieces; }
+   public static HashMap<Integer, Block> getPieces(){ return allPieces; }
    
    //retrieve (Block) with the desired information, create it if it doesn't exist
    public static Block getInstance(int height, int width, int xPos, int yPos){
@@ -274,7 +275,14 @@ public class Block
       space.add(Pair.getInstance(1,0));
       space.add(Pair.getInstance(2,0));
       
-      System.out.println("move() testing: ");
+      System.out.println("getInstance() testing: ");
+      System.out.println("getInstance(8,8,9,9) : " + getInstance(8,8,9,9));
+      System.out.println("getInstance(100,100,0,0): " + getInstance(100,100,0,0));
+      System.out.println("getInstance(5,3,Pair.getInstance(2,3): " + getInstance(5,3,Pair.getInstance(2,3)));
+      System.out.println("Note that due to laziness, Block.toString return height, width, yPos, xPos.");
+      System.out.println("\tThe constructors in Pair and Block in contrast take in xPos, yPos instead.");
+      
+      System.out.println("\nmove() testing: ");
       LinkedList<Pair> into;
       for(Pair toMove: Pair.DIRS){
          into = b.shouldBeEmpty(toMove, space);

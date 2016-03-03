@@ -319,19 +319,24 @@ public class Board implements Comparable<Board>
       }
    }
    //for generating (cost) to use in PriorityQueue in Solver.solve()
-   public int generateCost(Board goal){
+   public void generateCost(Board goal){
+      
+      
       if(cost != 0){
          System.out.println("The cost has been set before; that shouldn't happen.");
-         return cost;
       }
       LinkedList<Block> toCheck = new LinkedList<Block>();
       toCheck.addAll(allBlocks);
       int toReturn = 0;
       
       for(Block b: goal.getBlocks()){
-         toReturn += findMinCost(toCheck, b);
+         if(allBlocks.contains(b))
+            toCheck.remove(b);
+         else
+            toReturn += findMinCost(toCheck, b);
       }
-      return toReturn;
+      cost = toReturn;
+      
    }
    
    
@@ -420,7 +425,7 @@ public class Board implements Comparable<Board>
       System.out.println("Parent Board: " + brd.getParent());
       System.out.println("Moved Block: " + brd.getMovedBlock());
       System.out.println("Moved direction: " + brd.getMovedDirection());
-      System.out.println("\nClone::");
+      System.out.println("\nClone:");
       System.out.println("Parent Board: " + brdClone.getParent());
       System.out.println("Moved Block: " + brdClone.getMovedBlock());
       System.out.println("Moved direction: " + brdClone.getMovedDirection());
@@ -472,5 +477,19 @@ public class Board implements Comparable<Board>
       wrongEmpty.getSpaces().add(Pair.getInstance(0,2));
       try{wrongEmpty.isOK();}
       catch(IllegalStateException i){System.out.println(i.getMessage());}
+      
+      System.out.println("\ngenerateCost() testing: ");
+      System.out.println("Before cost generation: " + overlap.cost);
+      overlap.generateCost(overlap);
+      System.out.println("Goal is self, even if invalid: " + overlap.cost);
+      brd.generateCost(brd1);
+      System.out.println("Cost of one move difference: " + brd.cost);
+      brd.generateCost(wrongEmpty);
+      System.out.println("Can't generate a new cost if the (Board) already has one.");
+      brd1.generateCost(blank);
+      System.out.println("Blank goal: " + brd1.cost);
+      blank.generateCost(brd1);
+      System.out.println("Cost of blank (Board): " + blank.cost);
+      System.out.println("Integer.MAX_VALUE: " + Integer.MAX_VALUE);
    }
 }

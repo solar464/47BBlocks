@@ -1,4 +1,4 @@
-project folder: project06_kevinl
+folder: 47BBlocks
 
 src/Solver.java
     - Includes main, solves a given puzzle, multiple debugging modes
@@ -17,14 +17,16 @@ src/Solver.java
     - public HashSet<Pair> getEmpty() 
     - public int getH()
     - public int getW()
-         various accessor methods
+         various accessor methods: initial (Board), goal (Board), empty spaces
+            generated for (init), height and width of the (Board)s
          
     - public Board solve()
          contains the algorithm used to solve the given puzzle and returns
             the final board if solved
          
     - public void printPath(Board)
-         prints the path from the given board to the initial configuration
+         prints the path from the given board to the initial configuration using
+            through the references to the parent (Board) in each (Board)
          prints various debugging statements depending on the mode
          
     - public static void printOptions()
@@ -33,16 +35,7 @@ src/Solver.java
          
     - public void setDebugMode(String)
          sets the debugging mode depending on the given string
-         
-      the class below is currently unused
-      implemented in preparation for A* search
-    - private class BWrapper implements Comparable<BWrapper>
-          - public BWrapper(Board)
-          - private int generateCost(Board)
-          - private int findMinCost(LinkedList<Block>,Block)
-          - public Board getBoard()
-          - public int getCost()
-          - public int compareTo(BWrapper)
+     
           
 src/Board.java
     - Includes main, entirely for method testing
@@ -65,7 +58,8 @@ src/Board.java
          prints debugging information regarding (count)
          
     - public static void resetTimes()
-         initializes various timer variables for relevant methods
+         initializes timer variables for relevant methods, these timers total the
+            amount of time each method runs for during puzzle solving
     - public static long getMakeMove()
     - public static long getDeepClone()
     - public static long getCheckSolved()
@@ -80,21 +74,27 @@ src/Board.java
          constructor
          
     - public void setPath(Board,Block,Pair)
-         sets the parent and the move made to make (this)
+         sets the parent and the move needed to unmake (this)
          
     - public HashSet<Block> getBlocks()
     - public HashSet<Pair> getSpaces()
     - public Board getParent()
     - public Block getMovedBlock()
     - public Pair getMovedDirection()
+    - public int getCost()
          various accessor methods
+         the blocks and their information in (this)
+         the empty spaces in (this) represented by (Pair)s
+         the 3 variables storing path information
+         a number representing the distance from (this) to the goal, for heuristics 
          
     - public Board makeMove(Block,Pair) 
          returns a new (Board) with the given (Block) moved in the given (Pair)
-            direction, setPath() isn't used until verified it's a new configuration
+            direction, then uses setPath() to store path and provide a check against
+            unmaking the move
             
     - public boolean equals(Object)
-         true if (allBlocks) contain equal (Block)s, empty spaces ignored
+         true if both (allBlocks) contain equal (Block)s, empty spaces ignored
          
     - public int hashCode()
          returns product of hashCodes of the (Block)s in (allBlocks)
@@ -122,8 +122,10 @@ src/Block.java
     
     - public static void setDebug(boolean,boolean,boolean)
          sets the booleans used to control debugging information to be used
-            in Solver    - public static boolean getBLOCK1()
-    
+            in Solver    
+    - public static boolean getBLOCK1()
+         accessor method to needed debug controller for use in Solver
+         
     - public static void setCount(int)
          initializes (count) which is used to count the number of this type
             of object created       
@@ -132,8 +134,17 @@ src/Block.java
     - public static void printCount()
          prints debugging information regarding (count)
          
+    - public static void setInstanceCount(int)
+         initialize (instanceCount) which counts the number of references to 
+            (Block)s created
+    - public static int getInstanceCount()
+         accessor method for (instanceCount)
+    - public static void printInstanceCount()
+         prints debugging information regarding (instanceCount)
+         
     - public static void resetTimes()
-         initializes timer variables for relevant methods
+         initializes timer variables for relevant methods, these timers total the
+            amount of time each method runs for during puzzle solving
     - public static long getShouldBeEmpty()
     - public static long getCanMove()
     - public static long getMove()
@@ -157,24 +168,19 @@ src/Block.java
          returns true if the two (Block)s have equivalent data
          
     - public int hashCode()
-         returns hashCode of (this)'s string representation
+         returns an int that is essentially height, width, yPos, xPos concatenated
+            together
          
-    - public Pair[] shouldBeEmpty(Pair)
+    - public LinkedList<Pair> shouldBeEmpty(Pair)
          returns the empty spaces required to move in the given (Pair) direction
+         returns null if cannot move in the given direction
          
-    - public boolean canMove(Pair[],HashSet<Pair>)
-         returns if (this) can move, checks if the empty spaces specified from
-            shouldBeEmpty() are within the given HashSet, which should be the
-            (spaces) of the (Board) (this) is in
-            
-    - public void move(Pair,Pair[],HashSet<Pair>)
-         updates (pos) and the given HashSet to reflect movement of (this)
+    - public Block move(Pair,LinkedList<Pair>,HashSet<Pair>)
+         returns a (Block) with updated (pos) and updates the given HashSet, which
+            should be the HashSet of empty spaces, to reflect the move
          
     - public String toString()
          returns a string representation of (this)
-         
-    - public Block deepClone()
-         returns a new (Block) with the same data as (this)
          
 src/Pair.java
     - Includes main method, entirely method testing
@@ -279,5 +285,37 @@ considering combining Block.shouldBeEmpty() and Block.canMove()
    
 ------------------------------------------------------------------------------
 After stage 3
-
+------------------------------------------------------------------------------
+   (Pair) is used as an abstraction of vector algebra and the cartesian coordinate system.
    
+   (Block) is used to store the height, width, and position of the upper left corner
+of a block, along with methods to serve as another abstraction barrier
+   
+   (Board) stores a HashSet<Block> of the blocks in the current configuration and 
+most should store a HashSet<Pair> for the coordinates of the empty spaces. The use
+of HashSet is for the constant runtime of contains(). This allows for relatively easy
+comparison between boards and move generation.
+   
+   The objects used here are largely static due to the singleton implementation of 
+(Block) and (Pair) to prevent the construction of redundant objects. Also, (Board)s
+cannot be mutated since they are stored in (past) to check against past configurations.
+   
+   The move generation method is to attempt to move every (Block) in every direction
+(represented by (Pair)s) in a nested for loop and, if the block can move, it generates 
+a list of empty spaces that will be replaced by new coordinates.  Then a new Board 
+is generated for each successful move, which is compared to past configurations.
+It's discarded it if it has been encountered before, and stored for further processing otherwise. 
+Once all the moves for the current (Board) have been exhausted, the next (Board) is
+processed for new (Board)s, this continues until a solution is found or all reachable
+(Board) configurations have been exhausted.
+
+   The use of different data structures to store the (board)s to be processed results
+in different search algorithms. I originally planned to use a PriorityQueue, ordering
+the (Board)s by their costs. Their costs would be calculated by summing the manhattan
+distances from each goal block to the nearest block of the same size in current board,
+disregarding duplicates though. 
+   Strangely enough, it seems that an error I made in cost generation actually increases
+the speed of the algorithm in non-extreme cases. If the cost of each (Board) is always
+0, the algorithm essentially becomes a brute force depth-first search algorithm, yet
+it is significantly faster than the A* search algorithm I implemented except for such
+puzzles as the big.tray.3 with 2 blocks and 10000 spaces.

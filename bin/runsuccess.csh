@@ -1,7 +1,7 @@
 #!/bin/csh
 # usage: runsuccess initfile goalfile, where there is a solution
-limit cputime 120
-set testdir=C://Users/Kevin/workspace/47BBlocks/tests/medium
+limit cputime 
+set testdir=C://Users/Kevin/workspace/47BBlocks/tests/hard
 /bin/rm -f /tmp/out$$
 echo $1 " " $2
 java Solver $testdir/$1 $testdir/$2 > /tmp/out$$
