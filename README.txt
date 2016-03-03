@@ -109,6 +109,7 @@ src/Board.java
     - public boolean checkSolved(Board)
          checks if each of the (Block)s of the given (Board) are contained in
             (this), the given (Board) should be (goal)
+            
     - public void isOK() throws IllegalStateException
          checks if (this) has a valid configuration: no (Block)s overlapping
             or out of bounds, no empty spaces inside (Block)s, etc.
@@ -146,7 +147,6 @@ src/Block.java
          initializes timer variables for relevant methods, these timers total the
             amount of time each method runs for during puzzle solving
     - public static long getShouldBeEmpty()
-    - public static long getCanMove()
     - public static long getMove()
          accessor methods for relevant timers
     - public static void printTimes()
@@ -163,9 +163,6 @@ src/Block.java
     - public int getXPos()
     - public int getYPos()
          various accessor methods
-         
-    - public boolean equals(Object)
-         returns true if the two (Block)s have equivalent data
          
     - public int hashCode()
          returns an int that is essentially height, width, yPos, xPos concatenated
@@ -317,5 +314,56 @@ disregarding duplicates though.
    Strangely enough, it seems that an error I made in cost generation actually increases
 the speed of the algorithm in non-extreme cases. If the cost of each (Board) is always
 0, the algorithm essentially becomes a brute force depth-first search algorithm, yet
-it is significantly faster than the A* search algorithm I implemented except for such
-puzzles as the big.tray.3 with 2 blocks and 10000 spaces.
+it is significantly faster than the A* search algorithm I implemented. It can solve
+hard/c71 within seconds yet the A* algorithm doesn't terminate within a minute. Paradoxically
+the A* algorithm can solve more memory intensive puzzles as the big.tray.3 with 2 blocks and 
+10000 spaces while the depth-first search can't. Perhaps the amount of time
+needed to generate the cost and place the (Board) in its correct position in the heap
+takes too much time.
+-----------------------------------------------------------------------
+Possible Alternatives:
+   - Representing (Blocks) and (Pair)s as integers, essentially the hashCode I use 
+         for them right now.
+         Admittedly, this would likely save even more space than even the singleton
+            implementation of the two classes currently and would only take slightly
+            more logic and processing to function.
+         Still, this approach sacrifices the clarity that the (Block) and (Pair) 
+            classes provide. Using this would result in a mess of '% ' and '/' 
+            and error checking in the code.
+            
+   - Representing (Board)s as 2-D arrays
+         While it would make move generation much easier, each board configuration
+            needs to be stored in the past configurations and 2-D arrays would
+            take too much memory.
+         It might be possible with more though to represent whole board with a 
+            String, but it runs into the same problem described in the previous alternative
+        
+   - Move generation based on empty spaces instead of blocks
+         The idea is to find the blocks to move based on their proximity to empty spaces
+         This was the initial algorithm used, but due to the way I represent a board
+            it would require iterating through the hashSet of blocks several times
+         Additionally, this method only has the advantage if there are few empty spaces
+   
+   - Move generation based on checking for overlaps or out of bounds
+         The idea is to move a block and check if the resulting configuration is valid
+         This would eliminate the need to keep track of the empty spaces, but the
+            cost of error checking would grow linearly with the number of blocks
+         It is best suited to those extreme boards with huge spaces and few blocks
+         
+   - Different data structures to store the blocks and spaces in the boards
+         - Tree
+            A data structure using a binary tree to sort the blocks would make it easier
+            to find a certain sized block for cost generation.
+            However, the ultimate structure of the tree may depend on the order of 
+            insertion, making it unreliable for comparing boards
+            While it could be possible to use it to group the blocks by size,
+            the same can be done with a hashMap without the extra access time
+         - Map
+            Often times the data of the needed block isn't entirely known, ultimately
+            resorting to iteration as in the current implementation
+         - List
+            Lists would only be usable if they were sorted, which may take a significant
+            amount of time.
+            If sorted, comparison and search runtimes wouldn't suffer much only if the 
+            number of blocks is low.
+            

@@ -350,4 +350,77 @@ makeMove(): 2145
 deepClone(): 1520
 checkSolved(): 268
 equals(): 747
+----------------------------------------------------------
+Stage 3, -H switches on heuristic usage
+----------------------------------------------------------
+java Solver --time ../resources/c46.txt ../resources/c46goal.txt
 
+Total runtimes of relevant methods in (Block):
+shouldBeEmpty(): 570
+move(): 22
+
+Total runtimes of relevant methods in (Board):
+makeMove(): 149
+deepClone(): 101
+checkSolved(): 8
+equals(): 22
+------------------------------------------------------------------
+java Solver --numbers ../resources/c46.txt ../resources/c46goal.txt
+
+Number of (Pair) objects created besides (table) and directions: 0
+Number of (Pair) references created: 861352
+Number of (Block) objects created: 46
+Estimated number of unique (Block)s possible: 80
+Number of (Block) references created: 29671
+Number of (Board)s created: 29671
+Number of unique (Board)s encountered: 20955
+Number of moves made to reach goal: 5020
+-------------------------------------------------------------------
+java Solver -Htime ../resources/c46.txt ../resources/c46goal.txt
+
+Total runtimes of relevant methods in (Block):
+shouldBeEmpty(): 1021
+move(): 41
+
+Total runtimes of relevant methods in (Board):
+makeMove(): 267
+deepClone(): 193
+checkSolved(): 11
+equals(): 82
+-------------------------------------------------------------------
+java Solver -Hnumbers ../resources/c46.txt ../resources/c46goal.txt
+
+Number of (Pair) objects created besides (table) and directions: 0
+Number of (Pair) references created: 1599134
+Number of (Block) objects created: 46
+Estimated number of unique (Block)s possible: 80
+Number of (Block) references created: 56540
+Number of (Board)s created: 56540
+Number of unique (Board)s encountered: 25619
+Number of moves made to reach goal: 298
+------------------------------------------------------------------
+java Solver --numbers ../tests/hard/c71 ../tests/hard/71.goal
+
+Number of (Pair) objects created besides (table) and directions: 0
+Number of (Pair) references created: 3702596
+Number of (Block) objects created: 95
+Estimated number of unique (Block)s possible: 216
+Number of (Block) references created: 79978
+Number of (Board)s created: 79978
+Number of unique (Board)s encountered: 56005
+Number of moves made to reach goal: 12801
+
+-------------------------------------------------------------------
+java Solver --time ../tests/hard/c71 ../tests/hard/71.goal
+
+Total runtimes of relevant methods in (Block):
+shouldBeEmpty(): 2090
+move(): 75
+
+Total runtimes of relevant methods in (Board):
+makeMove(): 610
+deepClone(): 489
+checkSolved(): 16
+equals(): 977
+-------------------------------------------------------------------
+*for c71 and 71.goal, -H does not terminate within the minute
