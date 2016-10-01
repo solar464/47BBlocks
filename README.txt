@@ -1,3 +1,7 @@
+Description: a java program with suitable data structure and algorithm to efficiently solve sliding-block" puzzles. Each puzzle consists of a number of rectangular blocks in a tray, the problem is to slide the pieces without lifting any out of the tray, until achieving a certain configuration.
+
+
+
 folder: 47BBlocks
 
 src/Solver.java
